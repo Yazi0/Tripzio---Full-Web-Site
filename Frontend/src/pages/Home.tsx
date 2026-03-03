@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import { Car, Calendar, Map, Star, ChevronRight, Heart, X, Mountain, Waves, MapPin, ChevronLeft, Calendar as CalendarIcon, Users, Navigation, ArrowRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { Destination } from './DestinationsPage';
+import { Destination, Listing } from '../types';
 import { getDestinations } from '../api/destinations';
 import { ListingCard } from '../components/features/ListingCard';
 import { HeroSearch } from '../components/features/HeroSearch';
 import { getFeaturedListings, getListings } from '../api/listings';
-import { Listing } from '../types';
+// import { Listing } from '../types';
 import WhyChooseImage from '../assets/images/WhyChooese.png';
 import { LiveDateTime } from '../components/features/LiveDateTime';
 
@@ -495,7 +495,7 @@ export const Home = () => {
 
                                 {/* Image Indicators */}
                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                                    {selectedDestination.images.map((_, index) => (
+                                    {selectedDestination.images.map((_: string, index: number) => (
                                         <button
                                             key={index}
                                             onClick={(e) => {
@@ -543,7 +543,7 @@ export const Home = () => {
                                         <div className="mb-8">
                                             <h4 className="text-xl font-bold text-gray-900 mb-4">Popular Activities</h4>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                                {selectedDestination.popularActivities.map((activity) => (
+                                                {selectedDestination.popularActivities.map((activity: string) => (
                                                     <div
                                                         key={activity}
                                                         className="bg-gray-50 hover:bg-primary-50 p-4 rounded-xl border border-gray-100 hover:border-primary-200 transition-colors"
