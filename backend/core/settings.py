@@ -3,14 +3,18 @@ Django settings for Travell backend.
 """
 from pathlib import Path
 from datetime import timedelta
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-travell-dev-secret-key-change-in-production'
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-change-me")
 
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['*']
+# In production, restrict hosts. Keep it flexible for Render + local dev.
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*.onrender.com,localhost,127.0.0.1").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -20,9 +24,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     # Third party
     'rest_framework',
     'corsheaders',
+
     # Local apps
     'users',
     'listings',
@@ -34,14 +40,20 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+
+    # WhiteNoise should be near the top (after SecurityMiddleware)
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    # CORS middleware should be before CommonMiddleware
     'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -65,6 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
+# NOTE: SQLite is not recommended for production on Render (data can be lost on restarts).
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -90,9 +103,10 @@ USE_I18N = True
 USE_TZ = True
 
 # Static and Media files
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -117,6 +131,12 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
-# CORS Settings (allow frontend to call backend)
-CORS_ALLOW_ALL_ORIGINS = True  # For development only
+# CORS Settings (Production safe)
+# Allow ONLY your frontend (Vercel) to call the API
+CORS_ALLOWED_ORIGINS = [
+    os.getenv("FRONTEND_URL", "https://tripzioi.vercel.app"),
+]
+
+# If you use cookies/session auth across domains, keep True.
+# If you only use JWT in Authorization header, this can be False.
 CORS_ALLOW_CREDENTIALS = True
