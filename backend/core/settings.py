@@ -14,7 +14,15 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-change-me")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # In production, restrict hosts. Keep it flexible for Render + local dev.
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*.onrender.com,localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = [
+    "tripzio-full-web-site.onrender.com",
+    ".onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 # Application definition
 INSTALLED_APPS = [
