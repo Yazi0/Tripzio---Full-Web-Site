@@ -14,12 +14,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-change-me")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
 # In production, restrict hosts. Keep it flexible for Render + local dev.
-ALLOWED_HOSTS = [
-    "tripzio-full-web-site.onrender.com",
-    ".onrender.com",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ['*']
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
@@ -48,15 +43,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-
-    # WhiteNoise should be near the top (after SecurityMiddleware)
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
-    'django.contrib.sessions.middleware.SessionMiddleware',
-
-    # CORS middleware should be before CommonMiddleware
     'corsheaders.middleware.CorsMiddleware',
-
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -140,11 +129,5 @@ SIMPLE_JWT = {
 }
 
 # CORS Settings (Production safe)
-# Allow ONLY your frontend (Vercel) to call the API
-CORS_ALLOWED_ORIGINS = [
-    os.getenv("FRONTEND_URL", "https://tripzioi.vercel.app"),
-]
-
-# If you use cookies/session auth across domains, keep True.
-# If you only use JWT in Authorization header, this can be False.
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
